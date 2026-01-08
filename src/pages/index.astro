@@ -1,11 +1,198 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Section from "../components/Section.astro";
+import Card from "../components/Card.astro";
+import Tag from "../components/Tag.astro";
+import { site } from "../config/site.js";
+import { getCollection } from "astro:content";
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const projects = (await getCollection("projects"))
+  .filter((p) => p.data.featured)
+  .sort((a, b) => (a.data.date < b.data.date ? 1 : -1))
+  .slice(0, 6);
+
+const research = (await getCollection("research"))
+  .sort((a, b) => (a.data.date < b.data.date ? 1 : -1))
+  .slice(0, 4);
+
+const base = import.meta.env.BASE_URL;
+const withBase = (p) => {
+  const basePath = base.endsWith("/") ? base : `${base}/`;
+  const rel = p.replace(/^\/+/, "");
+  return `${basePath}${rel}`;
+};
 ---
+<BaseLayout title={site.title}>
+  <section style="padding:52px 0 36px;">
+    <h1 class="h1">
+      {site.name}<span class="accent">.</span>
+    </h1>
+    <p class="p" style="max-width: 760px;">
+      Incoming M.Eng. in Robotics at UMD. I build production-grade software and
+      robotics systems, from real-time data platforms and LLM agents to sim-to-real
+      control pipelines.
+    </p>
+    <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:18px;">
+      <a class="btn" href={withBase(site.links.resume)}>Resume</a>
+      <a class="btn" href={site.links.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>
+      <a class="btn" href={site.links.github} target="_blank" rel="noreferrer">GitHub</a>
+    </div>
+  </section>
 
-<Layout>
-	<Welcome />
-</Layout>
+  <Section id="about" title="About">
+    <p class="p" style="max-width: 840px;">
+      I focus on dependable systems: control pipelines with safety fallbacks,
+      simulation-to-deployment workflows, and cloud data platforms with SLOs,
+      regression tests, and observability. Recent work includes a real-time
+      streaming ETL stack (millions of events/day), an enterprise BI LLM agent
+      platform (35% query success lift, 20% cloud cost reduction), and reinforcement
+      learning for ranking and robotics control.
+    </p>
+  </Section>
+
+  <Section id="experience" title="Experience">
+    <div class="grid">
+      <Card>
+        <h3 style="margin:0 0 6px;">STARK Tech — Software Engineer (Python/Node.js)</h3>
+        <p class="p">Taipei, Taiwan · Mar 2024 – Jul 2025</p>
+        <p class="p" style="margin-top:10px;">
+          Built event-driven streaming ETL on Azure Event Hubs + Databricks DLT,
+          improving CTR by ~20% and delivering ~5-minute latency. Led an enterprise
+          BI LLM agent platform with HITL gating and regression tests, improving
+          query success by ~35% while reducing cloud cost by ~20%. Implemented RL
+          recommender systems robust to drift and cold-start.
+        </p>
+      </Card>
+      <Card>
+        <h3 style="margin:0 0 6px;">Academia Sinica — Research Intern</h3>
+        <p class="p">Taipei, Taiwan · Jun 2022 – Oct 2022</p>
+        <p class="p" style="margin-top:10px;">
+          Implemented graph-based resource allocation for Social IoT and improved
+          robustness under dynamic topologies by ~15%. Documented scalability
+          trade-offs in internal technical reports.
+        </p>
+      </Card>
+    </div>
+  </Section>
+
+  <Section id="education" title="Education">
+    <div class="grid grid-2">
+      <Card>
+        <h3 style="margin:0 0 6px;">University of Maryland, College Park</h3>
+        <p class="p">M.Eng. in Robotics · Aug 2025 – May 2027 (Projected)</p>
+        <p class="p" style="margin-top:10px;">
+          Planned coursework: Embedded Systems, ROS2, Motion Planning, Sensor Fusion,
+          Reinforcement Learning, Control Systems.
+        </p>
+      </Card>
+      <Card>
+        <h3 style="margin:0 0 6px;">National Yang Ming Chiao Tung University</h3>
+        <p class="p">B.S. in Computer Science · Sep 2019 – Jun 2023</p>
+        <p class="p" style="margin-top:10px;">
+          GPA: 3.7/4.3 (last 60 credits). Relevant coursework: Network Programming,
+          Computer Networks, Probability & Statistics, Mechatronics Fundamentals.
+        </p>
+      </Card>
+    </div>
+  </Section>
+
+  <Section id="skills" title="Skills">
+    <div class="grid grid-2">
+      <Card>
+        <h3 style="margin:0 0 8px;">Programming + Backend</h3>
+        <div class="tags">
+          {["Python", "C/C++", "TypeScript", "SQL", "Node.js", "NestJS", "PostgreSQL"].map((t) => (
+            <Tag text={t} />
+          ))}
+        </div>
+      </Card>
+      <Card>
+        <h3 style="margin:0 0 8px;">Robotics + Controls</h3>
+        <div class="tags">
+          {["ROS2", "Gazebo", "MoveIt", "PID", "LQR/LQG/LQI", "System ID", "Real-time"].map((t) => (
+            <Tag text={t} />
+          ))}
+        </div>
+      </Card>
+      <Card>
+        <h3 style="margin:0 0 8px;">ML + MLOps</h3>
+        <div class="tags">
+          {["PyTorch", "RL (DQN/PPO)", "scikit-learn", "MLflow", "Experiment Tracking"].map((t) => (
+            <Tag text={t} />
+          ))}
+        </div>
+      </Card>
+      <Card>
+        <h3 style="margin:0 0 8px;">Data + Cloud + DevOps</h3>
+        <div class="tags">
+          {["Azure Event Hubs", "Databricks", "Delta", "Docker", "CI/CD", "Observability"].map((t) => (
+            <Tag text={t} />
+          ))}
+        </div>
+      </Card>
+    </div>
+  </Section>
+
+  <Section id="focus" title="Focus Areas">
+    <div class="grid grid-2">
+      <Card>
+        <h3 style="margin:0;">Software Engineering</h3>
+        <p class="p">Cloud-native data systems, backend platforms, ML/LLM tooling, CI/CD.</p>
+        <div class="tags">
+          {["Python", "TypeScript", "Azure", "Databricks", "CI/CD"].map((t) => <Tag text={t} />)}
+        </div>
+      </Card>
+      <Card>
+        <h3 style="margin:0;">Robotics & Controls</h3>
+        <p class="p">ROS2 control, motion pipelines, system identification, sim-to-real RL.</p>
+        <div class="tags">
+          {["ROS2", "Control", "RL", "Gazebo", "Simulation"].map((t) => <Tag text={t} />)}
+        </div>
+      </Card>
+    </div>
+  </Section>
+
+  <Section id="projects" title="Featured Projects">
+    <div class="grid grid-3">
+      {projects.map((p) => (
+        <Card href={withBase(`/projects/${p.id}/`)}>
+          <h3 style="margin:0 0 8px;">{p.data.title}</h3>
+          <p class="p">{p.data.summary}</p>
+          <div class="tags">
+            {p.data.tags.slice(0, 4).map((t) => <Tag text={t} />)}
+          </div>
+        </Card>
+      ))}
+    </div>
+    <div style="margin-top:16px;">
+      <a class="btn" href={withBase("/projects/")}>View all projects →</a>
+    </div>
+  </Section>
+
+  <Section id="research" title="Research">
+    <div class="grid">
+      {research.map((r) => (
+        <Card href={withBase(`/research/${r.id}/`)}>
+          <h3 style="margin:0 0 8px;">{r.data.title}</h3>
+          <p class="p">{r.data.summary}</p>
+          <div class="tags">
+            {r.data.tags.slice(0, 4).map((t) => <Tag text={t} />)}
+          </div>
+        </Card>
+      ))}
+    </div>
+    <div style="margin-top:16px;">
+      <a class="btn" href={withBase("/research/")}>View research →</a>
+    </div>
+  </Section>
+
+  <Section id="contact" title="Contact">
+    <p class="p">
+      College Park, MD · Relocating Summer 2026 · Phone: 571-689-7318
+    </p>
+    <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:14px;">
+      <a class="btn" href={site.links.email}>Email</a>
+      <a class="btn" href={site.links.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>
+    </div>
+  </Section>
+</BaseLayout>

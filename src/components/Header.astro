@@ -1,0 +1,20 @@
+---
+import { site } from "../config/site.js";
+const base = import.meta.env.BASE_URL;
+const withBase = (p) => {
+  const basePath = base.endsWith("/") ? base : `${base}/`;
+  const rel = p.replace(/^\/+/, "");
+  return `${basePath}${rel}`;
+};
+---
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="brand" href={withBase("/")}>{site.name}</a>
+    <div style="display:flex; gap:14px; align-items:center;">
+      {site.nav.map((item) => (
+        <a href={withBase(item.href)}>{item.label}</a>
+      ))}
+      <a class="btn" href={site.links.github} target="_blank" rel="noreferrer">GitHub</a>
+    </div>
+  </div>
+</nav>

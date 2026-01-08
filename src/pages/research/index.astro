@@ -1,0 +1,32 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Card from "../../components/Card.astro";
+import Tag from "../../components/Tag.astro";
+import { getCollection } from "astro:content";
+
+const items = (await getCollection("research"))
+  .sort((a, b) => (a.data.date < b.data.date ? 1 : -1));
+
+const base = import.meta.env.BASE_URL;
+const withBase = (p) => {
+  const basePath = base.endsWith("/") ? base : `${base}/`;
+  const rel = p.replace(/^\/+/, "");
+  return `${basePath}${rel}`;
+};
+---
+<BaseLayout title="Research">
+  <h1 class="h2" style="font-size:32px; margin-top:24px;">Research</h1>
+  <p class="p">Papers and research summaries.</p>
+
+  <div class="grid" style="margin-top:18px;">
+    {items.map((r) => (
+      <Card href={withBase(`/research/${r.id}/`)}>
+        <h3 style="margin:0 0 8px;">{r.data.title}</h3>
+        <p class="p">{r.data.summary}</p>
+        <div class="tags">
+          {r.data.tags.map((t) => <Tag text={t} />)}
+        </div>
+      </Card>
+    ))}
+  </div>
+</BaseLayout>

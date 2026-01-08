@@ -1,0 +1,37 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Tag from "../../components/Tag.astro";
+import { getCollection, render } from "astro:content";
+
+export async function getStaticPaths() {
+  const items = await getCollection("research");
+  return items.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+const base = import.meta.env.BASE_URL;
+const withBase = (p) => {
+  const basePath = base.endsWith("/") ? base : `${base}/`;
+  const rel = p.replace(/^\/+/, "");
+  return `${basePath}${rel}`;
+};
+---
+<BaseLayout title={entry.data.title} description={entry.data.summary}>
+  <a class="btn" href={withBase("/research/")} style="margin-top:24px;">← Back</a>
+
+  <h1 class="h2" style="font-size:34px; margin:18px 0 8px;">{entry.data.title}</h1>
+  <p class="p">{entry.data.summary}</p>
+
+  <div class="tags" style="margin:12px 0 24px;">
+    {entry.data.tags.map((t) => <Tag text={t} />)}
+  </div>
+
+  <article class="card">
+    <Content />
+  </article>
+</BaseLayout>
